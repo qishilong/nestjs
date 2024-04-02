@@ -37,6 +37,15 @@
       "compilerOptions": {
         "tsConfigPath": "apps/first-demo/tsconfig.app.json"
       }
+    },
+    "ioc": {
+      "type": "application",
+      "root": "apps/ioc",
+      "entryFile": "main",
+      "sourceRoot": "apps/ioc/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/ioc/tsconfig.app.json"
+      }
     }
   }
 }
