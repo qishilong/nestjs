@@ -1,10 +1,11 @@
-import { Module } from '@nestjs/common';
-import { FirstDemoController } from './first-demo.controller';
-import { FirstDemoService } from './first-demo.service';
+import { Module } from "@nestjs/common";
+import { FirstDemoController } from "./first-demo.controller";
+import { FirstDemoService } from "./first-demo.service";
+import { PersonModule } from "./person/person.module";
 
 @Module({
-  imports: [],
+  imports: [PersonModule],
   controllers: [FirstDemoController],
-  providers: [FirstDemoService],
+  providers: [FirstDemoService]
 })
 export class FirstDemoModule {}
