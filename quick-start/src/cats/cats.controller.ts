@@ -12,10 +12,14 @@ import {
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { Observable, of } from 'rxjs';
-import { CreateCatDto } from './create-cat.dto';
+import { CreateCatDto } from './dto/create-cat.dto';
+import { CatsService } from './cats.service';
+import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
+  constructor(private catsService: CatsService) {}
+
   // @Get()
   // findAll(
   //   @Req() request: Request,
@@ -33,8 +37,8 @@ export class CatsController {
   }
 
   @Post()
-  async createAsync(@Body() createCatDto: CreateCatDto) {
-    return 'this action adds a new cat';
+  createAsync(@Body() createCatDto: CreateCatDto) {
+    this.catsService.create(createCatDto);
   }
 
   @Post()
