@@ -14,7 +14,6 @@ import type { Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
-import { Cat } from './interfaces/cat.interface';
 
 @Controller('cats')
 export class CatsController {
@@ -32,7 +31,7 @@ export class CatsController {
   // }
 
   @Get()
-  async findAllAsync(@Query('age') age: number, @Query('bread') bread: string) {
+  findAllAsync(@Query('age') age: number, @Query('bread') bread: string) {
     return `This action returns all cats with age: ${age} and breed: ${bread}`;
   }
 
