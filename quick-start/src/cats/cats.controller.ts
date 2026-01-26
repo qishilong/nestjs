@@ -9,13 +9,19 @@ import {
   Param,
   HostParam,
   Body,
+  HttpException,
+  HttpStatus,
+  UseFilters,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
+import { ForbiddenException } from './forbidden.exceptions';
+import { HttpExceptionFilter } from './http-exception.filter';
 
 @Controller('cats')
+@UseFilters(new HttpExceptionFilter()) // 这种结构会为在CatsController中定义的每个路由处理器设置HttpExceptionFilter。
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
@@ -31,8 +37,46 @@ export class CatsController {
   // }
 
   @Get()
+  findAll() {
+    try {
+      // throw new Error('Simulated error');
+      return this.catsService.findAll();
+    } catch (error) {
+      throw new HttpException(
+        {
+          status: HttpStatus.FORBIDDEN,
+          error: 'This is a custom error message',
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: error,
+        },
+      );
+    }
+  }
+
+  @Get('error-forbidden')
+  findAllForbidden(): string {
+    throw new ForbiddenException();
+  }
+
+  @Get()
   findAllAsync(@Query('age') age: number, @Query('bread') bread: string) {
     return `This action returns all cats with age: ${age} and breed: ${bread}`;
+  }
+
+  @Get('error')
+  findAllError(): string {
+    throw new HttpException('Forbidden', HttpStatus.FORBIDDEN, {
+      cause: new Error('This is a custom error message'),
+      description: 'You do not have access to this resource',
+    });
+  }
+
+  @Post('post')
+  @UseFilters(new HttpExceptionFilter())
+  createForbiddenException(@Body() createCatDto: CreateCatDto) {
+    throw new ForbiddenException();
   }
 
   @Post()
@@ -40,7 +84,7 @@ export class CatsController {
     this.catsService.create(createCatDto);
   }
 
-  @Post()
+  @Post('post')
   create(): string {
     return 'This action adds a new cat';
   }

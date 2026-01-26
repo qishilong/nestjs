@@ -2,21 +2,22 @@ import {
   Module,
   NestModule,
   MiddlewareConsumer,
-  RequestMethod,
+  // RequestMethod,
 } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
-import { DatabaseModule } from './database/database.module';
+// import { DatabaseModule } from './database/database.module';
 import { LoggerMiddleware } from './logger.middleware';
 // import { logger } from './logger.middleware';
-import { CatsController } from './cats/cats.controller';
+// import { CatsController } from './cats/cats.controller';
 
 @Module({
-  imports: [CatsModule, DatabaseModule.forRoot()],
+  // imports: [CatsModule, DatabaseModule.forRoot()],
+  imports: [CatsModule],
   controllers: [AppController],
   providers: [AppService],
-  exports: [DatabaseModule],
+  // exports: [DatabaseModule],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
