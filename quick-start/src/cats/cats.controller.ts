@@ -12,16 +12,25 @@ import {
   HttpException,
   HttpStatus,
   UseFilters,
+  // ParseIntPipe,
+  ParseUUIDPipe,
+  UsePipes,
+  DefaultValuePipe,
+  ParseBoolPipe,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { Observable, of } from 'rxjs';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { CatsService } from './cats.service';
 import { ForbiddenException } from './forbidden.exceptions';
+// import { CatchEverythingFilter } from './http-exception.filter';
 import { HttpExceptionFilter } from './http-exception.filter';
+import { ZodValidationPipe } from './zod-validation.pipe';
+import { ValidationPipe } from './validation.pipe';
+import { ParseIntPipe } from './parse-int.pipe';
 
 @Controller('cats')
-@UseFilters(new HttpExceptionFilter()) // 这种结构会为在CatsController中定义的每个路由处理器设置HttpExceptionFilter。
+// @UseFilters(new CatchEverythingFilter()) // 这种结构会为在CatsController中定义的每个路由处理器设置HttpExceptionFilter。
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
@@ -79,8 +88,14 @@ export class CatsController {
     throw new ForbiddenException();
   }
 
+  // @Post()
+  // @UsePipes(new ZodValidationPipe(createCatSchema))
+  // createAsync(@Body() createCatDto: CreateCatDto) {
+  //   this.catsService.create(createCatDto);
+  // }
+
   @Post()
-  createAsync(@Body() createCatDto: CreateCatDto) {
+  createAsync(@Body(new ValidationPipe()) createCatDto: CreateCatDto) {
     this.catsService.create(createCatDto);
   }
 
@@ -103,15 +118,42 @@ export class CatsController {
     }
   }
 
-  @Get(':id')
-  findOne(@Param() params: any): string {
-    console.log(params.id);
-    return `This action returns a #${params.id} cat`;
+  // @Get(':id')
+  // findOne(@Param() params: any): string {
+  //   console.log(params.id);
+  //   return `This action returns a #${params.id} cat`;
+  // }
+
+  @Get('/uuid/:uuid')
+  findOneByUuid(@Param('uuid', new ParseUUIDPipe()) uuid: string): string {
+    return `This action returns a cat with UUID: ${uuid}`;
   }
 
+  @Get('default-value')
+  findAllDefaultValue(
+    @Query('activeOnly', new DefaultValuePipe(true), ParseBoolPipe)
+    activeOnly: boolean,
+    @Query('page', new DefaultValuePipe(0), ParseIntPipe) page: number,
+  ) {
+    return this.catsService.findAllDefaultValue(activeOnly, page);
+  }
+
+  // @Get(':id')
+  // findOneById(@Param('id') id: string): string {
+  //   return `This action returns a #${id} cat`;
+  // }
+
+  // 确保动态参数路由 (:id) 放在静态路径路由之后，:id 参数会匹配到任何内容
   @Get(':id')
-  findOneById(@Param('id') id: string): string {
-    return `This action returns a #${id} cat`;
+  findOne(
+    @Param(
+      'id',
+      // new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+      new ParseIntPipe(), // 使用自定义的 ParseIntPipe
+    )
+    id: number,
+  ) {
+    return this.catsService.findOne(id);
   }
 }
 

@@ -9,6 +9,8 @@ import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
 // import { DatabaseModule } from './database/database.module';
 import { LoggerMiddleware } from './logger.middleware';
+import { APP_PIPE } from '@nestjs/core';
+import { ValidationPipe } from './cats/validation.pipe';
 // import { logger } from './logger.middleware';
 // import { CatsController } from './cats/cats.controller';
 
@@ -16,7 +18,14 @@ import { LoggerMiddleware } from './logger.middleware';
   // imports: [CatsModule, DatabaseModule.forRoot()],
   imports: [CatsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [
+    AppService,
+    // 注意，在依赖注入方面，从任何模块外部注册的全局管道（如上面的示例中使用useGlobalPipes()）无法注入依赖项，因为绑定是在任何模块的上下文之外完成的。为了解决这个问题，可以使用以下结构直接从任何模块设置全局管道
+    {
+      provide: APP_PIPE,
+      useClass: ValidationPipe,
+    },
+  ],
   // exports: [DatabaseModule],
 })
 export class AppModule implements NestModule {
