@@ -9,8 +9,9 @@ import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
 // import { DatabaseModule } from './database/database.module';
 import { LoggerMiddleware } from './logger.middleware';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from './cats/validation.pipe';
+import { RolesGuard } from './roles.guard';
 // import { logger } from './logger.middleware';
 // import { CatsController } from './cats/cats.controller';
 
@@ -24,6 +25,11 @@ import { ValidationPipe } from './cats/validation.pipe';
     {
       provide: APP_PIPE,
       useClass: ValidationPipe,
+    },
+    // 全局守卫。全局守卫在整个应用程序中使用，适用于每个控制器和每个路由处理器。就依赖注入而言，从任何模块外部注册的全局守卫（如上面的示例中使用useGlobalGuards()）无法注入依赖项，因为这是在任何模块的上下文之外完成的。为了解决这个问题，你可以使用以下结构直接从任何模块设置守卫
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
     },
   ],
   // exports: [DatabaseModule],

@@ -17,6 +17,8 @@ import {
   UsePipes,
   DefaultValuePipe,
   ParseBoolPipe,
+  UseGuards,
+  SetMetadata,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { Observable, of } from 'rxjs';
@@ -28,9 +30,13 @@ import { HttpExceptionFilter } from './http-exception.filter';
 import { ZodValidationPipe } from './zod-validation.pipe';
 import { ValidationPipe } from './validation.pipe';
 import { ParseIntPipe } from './parse-int.pipe';
+import { RolesGuard } from 'src/roles.guard';
+import { Roles } from 'src/roles.decorator';
 
 @Controller('cats')
 // @UseFilters(new CatchEverythingFilter()) // 这种结构会为在CatsController中定义的每个路由处理器设置HttpExceptionFilter。
+// @UseGuards(new RolesGuard())
+@UseGuards(RolesGuard) // 为整个CatsController应用RolesGuard
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
@@ -95,11 +101,14 @@ export class CatsController {
   // }
 
   @Post()
+  // @UseGuards(RolesGuard) // 应用 RolesGuard 到此路由处理器
   createAsync(@Body(new ValidationPipe()) createCatDto: CreateCatDto) {
     this.catsService.create(createCatDto);
   }
 
   @Post('post')
+  @Roles(['admin'])
+  // @SetMetadata('roles', ['admin'])
   create(): string {
     return 'This action adds a new cat';
   }
