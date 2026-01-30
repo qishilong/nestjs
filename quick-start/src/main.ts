@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { RolesGuard } from './roles.guard';
+// import { RolesGuard } from './roles.guard';
+// import { LoggingInterceptor } from './logging.interceptor';
 // import { HttpExceptionFilter } from './cats/http-exception.filter';
 // import { NestExpressApplication } from '@nestjs/platform-express';
 // import { logger } from './logger.middleware';
@@ -17,6 +18,8 @@ async function bootstrap() {
   // app.useGlobalPipes(new ValidationPipe()); // 全局应用管道
 
   // app.useGlobalGuards(new RolesGuard()); // 全局应用守卫
+
+  // app.useGlobalInterceptors(new LoggingInterceptor()); // 全局应用拦截器
 
   await app.listen(process.env.PORT ?? 1000);
 }

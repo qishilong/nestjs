@@ -9,11 +9,12 @@ import { AppService } from './app.service';
 import { CatsModule } from './cats/cats.module';
 // import { DatabaseModule } from './database/database.module';
 import { LoggerMiddleware } from './logger.middleware';
-import { APP_GUARD, APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { ValidationPipe } from './cats/validation.pipe';
 import { RolesGuard } from './roles.guard';
 // import { logger } from './logger.middleware';
 // import { CatsController } from './cats/cats.controller';
+import { LoggingInterceptor } from './logging.interceptor';
 
 @Module({
   // imports: [CatsModule, DatabaseModule.forRoot()],
@@ -30,6 +31,11 @@ import { RolesGuard } from './roles.guard';
     {
       provide: APP_GUARD,
       useClass: RolesGuard,
+    },
+    // 全局拦截器在整个应用中使用，适用于每个控制器和每个路由处理器。就依赖注入而言，从任何模块外部注册的全局拦截器（如上面的示例中使用useGlobalInterceptors()）无法注入依赖项，因为这是在任何模块的上下文之外完成的。为了解决这个问题，你可以使用以下结构从任何模块直接设置拦截器
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: LoggingInterceptor,
     },
   ],
   // exports: [DatabaseModule],

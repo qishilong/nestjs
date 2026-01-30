@@ -19,6 +19,7 @@ import {
   ParseBoolPipe,
   UseGuards,
   SetMetadata,
+  UseInterceptors,
 } from '@nestjs/common';
 import type { Request } from 'express';
 import { Observable, of } from 'rxjs';
@@ -32,11 +33,17 @@ import { ValidationPipe } from './validation.pipe';
 import { ParseIntPipe } from './parse-int.pipe';
 import { RolesGuard } from 'src/roles.guard';
 import { Roles } from 'src/roles.decorator';
+// import { LoggingInterceptor } from 'src/logging.interceptor';
+import { TransformInterceptor } from 'src/transform.interceptor';
+import { CacheInterceptor } from 'src/cache.interceptor';
+import { TimeoutInterceptor } from 'src/timeout.interceptor';
 
 @Controller('cats')
 // @UseFilters(new CatchEverythingFilter()) // 这种结构会为在CatsController中定义的每个路由处理器设置HttpExceptionFilter。
 // @UseGuards(new RolesGuard())
 @UseGuards(RolesGuard) // 为整个CatsController应用RolesGuard
+// @UseInterceptors(LoggingInterceptor) // 为整个CatsController应用LoggingInterceptor
+@UseInterceptors(TransformInterceptor) // 为整个CatsController应用TransformInterceptor
 export class CatsController {
   constructor(private catsService: CatsService) {}
 
@@ -114,14 +121,18 @@ export class CatsController {
   }
 
   @Get('abcd/*')
-  @Redirect('https://nestjs.com', 301)
+  @UseInterceptors(CacheInterceptor)
+  // @Redirect('https://nestjs.com', 301)
   getAbcd() {
     return 'This action returns all cats for abcd/* route';
   }
 
   @Get('docs')
-  @Redirect('https://docs.nestjs.com', 302)
-  getDocs(@Query('version') version) {
+  @UseInterceptors(TimeoutInterceptor)
+  // @Redirect('https://docs.nestjs.com', 302)
+  async getDocs(@Query('version') version) {
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+
     if (version && version === '5') {
       return { url: 'https://docs.nestjs.com/v5/' };
     }
