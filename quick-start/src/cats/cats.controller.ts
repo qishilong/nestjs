@@ -37,6 +37,8 @@ import { Roles } from 'src/roles.decorator';
 import { TransformInterceptor } from 'src/transform.interceptor';
 import { CacheInterceptor } from 'src/cache.interceptor';
 import { TimeoutInterceptor } from 'src/timeout.interceptor';
+import { User } from 'src/user.decorator';
+import { Auth } from 'src/auth.decorator';
 
 @Controller('cats')
 // @UseFilters(new CatchEverythingFilter()) // 这种结构会为在CatsController中定义的每个路由处理器设置HttpExceptionFilter。
@@ -57,6 +59,12 @@ export class CatsController {
   // ): string {
   //   return 'This action returns all cats';
   // }
+
+  @Get()
+  // @Auth('admin')
+  async findOneUser(@User() user) {
+    console.log(user);
+  }
 
   @Get()
   findAll() {
