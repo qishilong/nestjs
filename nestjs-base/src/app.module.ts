@@ -1,13 +1,15 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from 'src/config/config.module';
+// import { ConfigModule } from 'src/config/config.module';
 // import { ConfigModuleDefinition } from './config/config.module-definition';
+import { CatsModule } from './cats/cats.module';
 
 @Module({
   // imports: [ConfigModule],
   imports: [
-    ConfigModule.register({ folder: './config' }),
+    // ConfigModule.register({ folder: './config' }),
+    CatsModule,
     // or alternatively:
     // ConfigModuleDefinition.registerAsync({
     //   useFactory: () => {
