@@ -10,6 +10,7 @@ export class CircularService {
   ) {}
 
   getHello(): string {
+    this.commonService.getHello();
     return 'Hello from CircularService!';
   }
 }
