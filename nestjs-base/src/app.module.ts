@@ -4,12 +4,14 @@ import { AppService } from './app.service';
 // import { ConfigModule } from 'src/config/config.module';
 // import { ConfigModuleDefinition } from './config/config.module-definition';
 import { CatsModule } from './cats/cats.module';
+import { CircularModule } from './circular-dependency/circular.module';
 
 @Module({
   // imports: [ConfigModule],
   imports: [
     // ConfigModule.register({ folder: './config' }),
     CatsModule,
+    CircularModule,
     // or alternatively:
     // ConfigModuleDefinition.registerAsync({
     //   useFactory: () => {
